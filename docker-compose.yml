@@ -1,0 +1,61 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    command: yarn start:dev
+    ports:
+      - ${PORT:-3000}:3000
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - postgres
+      - kafka
+    env_file:
+      - .env
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin}
+      POSTGRES_DB: ${POSTGRES_DB:-watch_db}
+    ports:
+      - ${POSTGRES_PORT:-5432}:5432
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.1
+    container_name: zookeeper
+    ports:
+      - '${ZOOKEEPER_CLIENT_PORT:-2181}:2181'
+    environment:
+      ZOOKEEPER_CLIENT_PORT: ${ZOOKEEPER_CLIENT_PORT:-2181}
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.1
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - ${KAFKA_PORT:-9092}:9092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: ${KAFKA_ADVERTISED_LISTENERS:-PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092}
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: ${KAFKA_LISTENER_SECURITY_PROTOCOL_MAP:-PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT}
+      KAFKA_INTER_BROKER_LISTENER_NAME: ${KAFKA_INTER_BROKER_LISTENER_NAME:-PLAINTEXT_INTERNAL}
+      KAFKA_LISTENERS: ${KAFKA_LISTENERS:-PLAINTEXT://}
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  localstack:
+    image: localstack/localstack:3.3
+    ports:
+      - '4566:4566' # endpoint principal (gateway AWS)
+    environment:
+      - SERVICES=s3
+      - DEBUG=1
+    volumes:
+      - ./localstack:/etc/localstack
+      - /var/run/docker.sock:/var/run/docker.sock
