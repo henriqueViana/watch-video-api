@@ -10,14 +10,17 @@ import { ErrorMapperService } from './common/services/error-mapper.service';
 import { ErrorInterceptor } from './common/interceptors/error.interceptor';
 import { IGetVideoStreamUseCase } from './domain/application/use-case/get-video-stream-use-case.interface';
 import { IErrorMapperService } from './common/services/error-mapper.interface';
+import { AuthController } from './interfaces/controllers/auth.controller';
+import { AuthModule } from './infra/auth/auth.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     KafkaModule,
-    S3Module
+    S3Module,
+    AuthModule
   ],
-  controllers: [AppController, VideoController],
+  controllers: [AppController, VideoController, AuthController],
   providers: [
     AppService, 
     {
