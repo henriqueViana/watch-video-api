@@ -11,6 +11,11 @@ services:
     depends_on:
       - postgres
       - kafka
+      - zookeeper
+      - localstack
+      - jaeger
+      - prometheus
+      - grafana
     env_file:
       - .env
 
@@ -43,7 +48,7 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: ${KAFKA_ADVERTISED_LISTENERS:-PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092}
+      KAFKA_ADVERTISED_LISTENERS: ${KAFKA_ADVERTISED_LISTENERS:-PLAINTEXT://kafka:9092,PLAINTEXT_INTERNAL://kafka:29092}
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: ${KAFKA_LISTENER_SECURITY_PROTOCOL_MAP:-PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT}
       KAFKA_INTER_BROKER_LISTENER_NAME: ${KAFKA_INTER_BROKER_LISTENER_NAME:-PLAINTEXT_INTERNAL}
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
@@ -59,3 +64,21 @@ services:
       - ./localstack:/etc/localstack
       - ./assets/videos:/videos
       - /var/run/docker.sock:/var/run/docker.sock
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.51
+    ports:
+      - '16686:16686' # UI
+      - '14268:14268' # Trace ingestion
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - '9090:9090'
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - '3001:3000'

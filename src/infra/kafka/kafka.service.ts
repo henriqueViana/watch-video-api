@@ -1,13 +1,18 @@
-import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { Kafka, Producer, KafkaMessage } from 'kafkajs'
 import { KafkaConfig } from './kafka.config';
+import { ClientKafka } from '@nestjs/microservices';
 
 @Injectable()
 export class KafkaService implements OnModuleInit, OnModuleDestroy {
   private kafka: Kafka
   private producer: Producer
 
+  constructor(@Inject('KAFKA_SERVICE') private readonly kafkaClient: ClientKafka) {}
+
   async onModuleInit() {
+    await this.kafkaClient.connect();
+    console.log('Kafka client connected');
     this.kafka = new Kafka(KafkaConfig)
     this.producer = this.kafka.producer()
 

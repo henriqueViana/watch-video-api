@@ -12,6 +12,9 @@ import { IGetVideoStreamUseCase } from './domain/application/use-case/get-video-
 import { IErrorMapperService } from './common/services/error-mapper.interface';
 import { AuthController } from './interfaces/controllers/auth.controller';
 import { AuthModule } from './infra/auth/auth.module';
+import { MetricsController } from './interfaces/controllers/metrics.controller';
+import { MetricsService } from './infra/observability/metrics/metrics.service';
+import { VideoLoggerConsumer } from './infra/kafka/controllers/video-logger-comsumer.controller';
 
 @Module({
   imports: [
@@ -20,7 +23,7 @@ import { AuthModule } from './infra/auth/auth.module';
     S3Module,
     AuthModule
   ],
-  controllers: [AppController, VideoController, AuthController],
+  controllers: [AppController, VideoController, AuthController, MetricsController, VideoLoggerConsumer],
   providers: [
     AppService, 
     {
@@ -32,7 +35,8 @@ import { AuthModule } from './infra/auth/auth.module';
       useClass: ErrorMapperService 
     },
     ErrorMapperService, 
-    ErrorInterceptor
+    ErrorInterceptor,
+    MetricsService
   ],
 })
 export class AppModule {}
