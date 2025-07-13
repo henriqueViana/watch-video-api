@@ -4,8 +4,12 @@ import { AppService } from './app.service';
 import { KafkaModule } from './infra/kafka/kafka.module';
 import { ConfigModule } from '@nestjs/config';
 import { S3Module } from './infra/s3/s3.module';
-import { GetVideoStreamUseCase } from './application/use-case/get-video-stream';
+import { GetVideoStreamUseCase } from './application/use-case/get-video-stream.use-case';
 import { VideoController } from './interfaces/controllers/video.controller';
+import { ErrorMapperService } from './common/services/error-mapper.service';
+import { ErrorInterceptor } from './common/interceptors/error.interceptor';
+import { IGetVideoStreamUseCase } from './domain/application/use-case/get-video-stream-use-case.interface';
+import { IErrorMapperService } from './common/services/error-mapper.interface';
 
 @Module({
   imports: [
@@ -14,6 +18,18 @@ import { VideoController } from './interfaces/controllers/video.controller';
     S3Module
   ],
   controllers: [AppController, VideoController],
-  providers: [AppService, GetVideoStreamUseCase],
+  providers: [
+    AppService, 
+    {
+      provide: IGetVideoStreamUseCase,
+      useClass: GetVideoStreamUseCase 
+    },
+    {
+      provide: IErrorMapperService,
+      useClass: ErrorMapperService 
+    },
+    ErrorMapperService, 
+    ErrorInterceptor
+  ],
 })
 export class AppModule {}
