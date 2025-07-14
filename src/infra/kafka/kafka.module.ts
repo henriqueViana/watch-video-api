@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common'
 import { ClientsModule, Transport } from '@nestjs/microservices'
 import { KafkaService } from './kafka.service'
+import { KafkaConfig } from './kafka.config'
 
 @Module({
   imports: [
@@ -9,10 +10,7 @@ import { KafkaService } from './kafka.service'
         name: 'KAFKA_SERVICE',
         transport: Transport.KAFKA,
         options: {
-          client: {
-            clientId: 'video-streaming',
-            brokers: ['kafka:9092'],
-          },
+          client: KafkaConfig,
           consumer: {
             groupId: 'video-streaming-consumer',
           },

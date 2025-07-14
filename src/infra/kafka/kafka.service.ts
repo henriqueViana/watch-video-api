@@ -1,44 +1,20 @@
-import { Inject, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { Kafka, Producer, KafkaMessage } from 'kafkajs'
-import { KafkaConfig } from './kafka.config';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
+import { logger } from '../observability/logger';
 
 @Injectable()
-export class KafkaService implements OnModuleInit, OnModuleDestroy {
-  private kafka: Kafka
-  private producer: Producer
-
+export class KafkaService implements OnModuleInit {
   constructor(@Inject('KAFKA_SERVICE') private readonly kafkaClient: ClientKafka) {}
 
   async onModuleInit() {
     await this.kafkaClient.connect();
-    console.log('Kafka client connected');
-    this.kafka = new Kafka(KafkaConfig)
-    this.producer = this.kafka.producer()
-
-    this.producer.connect()
-      .then(() => console.log('Kafka producer connected'))
-      .catch(err => console.error('Error connecting Kafka producer', err));
   }
 
-  async emit(topic: string, message: KafkaMessage) {
-    if (!this.producer) {
-      throw new Error('Kafka producer is not initialized');
-    }
-
+  async emit(topic: string, message) {
     try {
-      await this.producer.send({
-        topic,
-        messages: [message],
-      });
-      console.log(`Message sent to topic ${topic}`);
+      await this.kafkaClient.emit(topic, message).toPromise();
     } catch (error) {
-      console.error(`Error sending message to topic ${topic}`, error);
+      logger.error(`Error sending message to topic ${topic}`, message, error);
     }
-  }
-
-  async onModuleDestroy() {
-    await this.producer.disconnect()
-    console.log('Kafka producer disconnected')
   }
 }

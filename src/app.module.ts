@@ -15,6 +15,9 @@ import { AuthModule } from './infra/auth/auth.module';
 import { MetricsController } from './interfaces/controllers/metrics.controller';
 import { MetricsService } from './infra/observability/metrics/metrics.service';
 import { VideoLoggerConsumer } from './infra/kafka/controllers/video-logger-comsumer.controller';
+import { FilenameNotFoundStrategy } from './common/errors/filename-not-found.strategy';
+import { S3BucketNotFoundStrategy } from './common/errors/s3-bucket-not-found.strategy';
+import { S3KeyNotFoundStrategy } from './common/errors';
 
 @Module({
   imports: [
@@ -36,7 +39,10 @@ import { VideoLoggerConsumer } from './infra/kafka/controllers/video-logger-coms
     },
     ErrorMapperService, 
     ErrorInterceptor,
-    MetricsService
+    MetricsService,
+    FilenameNotFoundStrategy,
+    S3BucketNotFoundStrategy,
+    S3KeyNotFoundStrategy
   ],
 })
 export class AppModule {}
