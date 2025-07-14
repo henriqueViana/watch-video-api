@@ -24,3 +24,14 @@ graph TD
     G --> H[Database / Observability]
     C --> I[JWT Guard]
 ```
+
+```mermaid
+graph TD
+  A[Client] --> B[GET /video/stream]
+  B --> C[NestJS Controller]
+  C --> D[S3Service.getVideoStream()]
+  C --> E[kafka.emit("video-accessed")]
+  E --> F[Kafka Broker]
+  F --> G[VideoLogConsumer]
+  G --> H[Log Storage]
+```
