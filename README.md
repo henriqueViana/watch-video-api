@@ -18,7 +18,7 @@ Este projeto é um serviço de backend responsável por entregar vídeos em form
 
 ```mermaid
 graph TD
-  A[Client Gateway] --> B[GET video/stream]
+  A[Client Gateway] --> B[GET api/video]
   B --> C[NestJS Controller]
   C --> D[S3Service getVideoStream]
   C --> E[Kafka Emit video-accessed]
