@@ -25,7 +25,8 @@
     "s3:list-items": "docker-compose exec localstack awslocal s3 ls s3://videos-bucket",
     "s3:all-flow": "yarn s3:create-bucket && yarn s3:upload-video && yarn s3:list-items",
     "docs:prepare": "cp README.md docs/index.md",
-    "docs:server": "mkdocs serve"
+    "docs:server": "mkdocs serve",
+    "docs:build": "mkdocs build"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.844.0",

@@ -83,6 +83,8 @@ Após executar esses comandos teremos os containers rodando e com um video de ex
 Endpoint responsável por retornar um token JWT válido.
 Para buscar ou fazer upload de um video, o usuário precisa estar autenticado. Use a requisição abaixo para gerar um token (testes).
 
+**Requisição:**
+
 ```bash
 curl --location 'http://localhost:3000/v1/api/auth/token?userId=123'
 ```
@@ -95,6 +97,15 @@ curl --location 'http://localhost:3000/v1/api/auth/token?userId=123'
 
 Endpoint responsável por retornar um video via stream.
 Rota protejida por JWT, onde busca o video no S3, faz o stream do video, emite log de acesso com o Kafka e gera métricas para o Prometeus
+
+O nome do arquivo de video usado para testes é: **video-test.mp4**
+
+**Requisição:**
+
+```bash
+curl --location 'http://localhost:3000/v1/api/video?filename=video-test.mp4' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMjM0NSIsImlhdCI6MTc1MjQ5NTY5NCwiZXhwIjoxNzUyNDk5Mjk0fQ.NUFp25oXoRU-Fd4veXiyUPrKPhYJItrnM6lZm1wT03U'
+```
 
 ## Ferramentas
 
@@ -120,6 +131,25 @@ Rota protejida por JWT, onde busca o video no S3, faz o stream do video, emite l
 
 - **video.access.log:** (Producer Kafka)
 - **video.log.save:** (Consumer Kafka)
+
+## Documentação em HTML
+
+### Pré requisitos
+
+- **mkdocs:**
+
+Gerando uma versão HTML do README.
+
+```bash
+yarn docs:prepare  # faz uma cópia do conteúdo de README para /docs/index.md
+yarn docs:server  # sobe um servidor que disponibiliza o HTML na porta :8000
+```
+
+Ou também podendo gerar uma versão estática da documentação. Criando um diretório chamado **site**
+
+```bash
+yarn docs:build
+```
 
 ## Contribuições
 
