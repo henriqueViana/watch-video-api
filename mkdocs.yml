@@ -1,0 +1,7 @@
+site_name: Video Streaming API Docs
+nav:
+  - Home: index.md
+
+docs_dir: docs
+theme:
+  name: readthedocs
